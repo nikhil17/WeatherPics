@@ -53,4 +53,79 @@ var Child = React.createClass({
     }
 });
 
-ReactDOM.render(<Parent/>, document.getElementById('hello'));
+class Poo extends React.Component {
+
+   constructor(props) {
+      super(props);
+        
+      this.state = {
+         data: 0
+      }
+
+      this.setNewNumber = this.setNewNumber.bind(this)
+   };
+
+   setNewNumber() {
+      this.setState({data: this.state.data + 1})
+   }
+
+   render() {
+      return (
+         <div>
+            <button onClick = {this.setNewNumber}>INCREMENT</button>
+            <PissContent myNumber = {this.state.data}></PissContent>
+         </div>
+      );
+   }
+}
+
+class PissContent extends React.Component {
+    constructor(props) {
+      super(props);
+        console.log('constructor')
+        console.log(props);
+      this.state = {};
+    }
+
+   componentWillMount() {
+      console.log('Component WILL MOUNT!')
+   }
+
+   componentDidMount() {
+      console.log('Component DID MOUNT!')
+   }
+
+   componentWillReceiveProps(newProps) {    
+      console.log('Component WILL RECIEVE PROPS!')
+        console.log(newProps);
+
+   }
+
+   shouldComponentUpdate(newProps, newState) {
+      return true;
+   }
+
+   componentWillUpdate(nextProps, nextState) {
+      console.log('Component WILL UPDATE!');
+      console.log(nextProps);
+   }
+
+   componentDidUpdate(prevProps, prevState) {
+      console.log('Component DID UPDATE!')
+      console.log(prevProps)
+   }
+
+   componentWillUnmount() {
+      console.log('Component WILL UNMOUNT!')
+   }
+
+   render() {
+      return (
+         <div>
+            <h3>{this.props.myNumber}</h3>
+         </div>
+      );
+   }
+}
+
+ReactDOM.render(<Poo/>, document.getElementById('hello'));

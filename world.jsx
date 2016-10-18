@@ -2,69 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Button, Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
  
-class World extends React.Component {
-  render() {
-    return (
-    	<div>
-    		
-    		{/* <Button bsStyle="success">Aryan is the don mafatlal</Button> */}
-    		<FilterableWeatherImageTable/>
-    	</div>
-    	)
-
-    
-  }
-}
-
-
-
-
-class FilterableWeatherImageTable extends React.Component{
-	constructor(props) {
-	  super(props);
-	
-	  this.state = {
-		filterText: '',
-		showTemp: true,
-		showHum: true,
-		showImg: true
-	  };
-	}
-
-	handleUserInput(filterText, showTemp, showHum, showImg) {
-    	this.setState({
-      		filterText: filterText,
-			showImg: showImg,
-			showHum: showHum,
-			showTemp: showTemp
-    	});
-  	}	
-
-	render(){
-		return(
-			<div>
-
-				<SearchBar 
-					filterText = {this.state.filterText}
-					showTemp = {this.state.showTemp}
-					showHum = {this.state.showHum}
-					showImg = {this.state.showImg}
-					onUserInput= {this.handleUserInput.bind(this)}
-
-				/>
-				<h3>Content  is here below</h3>
-			</div>
-		)
-	}
-}
-
-
 
 
 class SearchBar extends React.Component{
 
 	handleChange(event){
-		console.log('piss')
+		// console.log('piss')
 		this.props.onUserInput(this.refs.searchText.value,
 			this.refs.temp.checked,
 			this.refs.hum.checked,
@@ -123,30 +66,143 @@ SearchBar.propTypes = {
 	showImg: React.PropTypes.bool
 }
 
-class CityRow extends React.Component{
-	render(){
-		return(
-			<tr>
+class CityContainer extends React.Component{
 
-			</tr>
+	render(){
+		console.log();
+		return(
+			<div>
+			
+	        	<p>
+		        	{this.props.city.city_name}  {this.props.city.temperature} Celsius  
+		        	wind :{this.props.city.wind}  
+		        	  feels like : {this.props.city.feels_like}
+	        	</p>
+        	
+
+        	</div>
 		);
 	}
 }
 
-CityRow.propTypes = {
-	city: React.PropTypes.string,
-	temperature:React.PropTypes.string,
-	wind:React.PropTypes.string,
-	feels_like:React.PropTypes.string,
-	precipitation:React.PropTypes.string,
+class CityTable extends React.Component{
 
+	constructor(props) {
+    	super(props);
+    	var rows = [];
+		this.search = this.search.bind(this);
+		// console.log(props);
+		
+	}
+
+	search(){
+		
+		console.log("search " + this.props.filterText)
+		// this.props.cities.forEach(function(city){
+		// 	// if (city.city_name.indexOf(this.props.filterText) == -1){
+		// 	// 	return;
+		// 		// console.log(this.props.showHum);
+			
+
+		// 	rows.push(<CityContainer key={city.city_name} city={city} />)
+		// }
+
+	}
+
+	render(){
+		var rows = [];
+		console.log(this.props.filterText)
+		this.props.cities.forEach(function(city){
+			// if (city.city_name.indexOf(this.props.filterText) == -1){
+			// 	return;
+			// }
+
+			rows.push(<CityContainer key={city.city_name} city={city} />)
+		});
+
+
+
+		return (
+			<div>
+				<h4>cities here below</h4>
+				{rows}
+
+			</div>
+		)
+	}
+}
+CityTable.propTypes={
+	filterText: React.PropTypes.string
+}
+CityTable.defaultProps ={
+	filterText: ""
 }
 
-var Cities = [
-	{city:'Bangalore', temperature:'21 C', wind: '10kmph', feels_like:'20', precipitation: '0.09'},
-	{city:'Boston', temperature:'20 C', wind: '5kmph', feels_like:'20', precipitation:'0.01'},
-	{city:'Mumbai', temperature:'19 C', wind: '10kmph', feels_like:'10', precipitation:'0.01'}
+
+
+// CityRow.propTypes = {
+// 	city: React.PropTypes.string,
+// 	temperature:React.PropTypes.string,
+// 	wind:React.PropTypes.string,
+// 	feels_like:React.PropTypes.string,
+// 	precipitation:React.PropTypes.string,
+
+// }
+
+var CITIES = [
+	{city_name:'Bangalore', temperature:'21 C', wind: '10kmph', feels_like:'20', precipitation: '0.09'},
+	{city_name:'Boston', temperature:'20 C', wind: '5kmph', feels_like:'20', precipitation:'0.01'},
+	{city_name:'Mumbai', temperature:'19 C', wind: '10kmph', feels_like:'10', precipitation:'0.01'}
 ]
+
+class FilterableWeatherImageTable extends React.Component{
+	constructor(props) {
+	  super(props);
+	
+	  this.state = {
+		filterText: "",
+		showTemp: true,
+		showHum: true,
+		showImg: true
+	  };
+	}
+
+	handleUserInput(filterText, showTemp, showHum, showImg) {
+    	this.setState({
+      		filterText: filterText,
+			showImg: showImg,
+			showHum: showHum,
+			showTemp: showTemp
+    	});
+  	}	
+
+	render(){
+		return(
+			<div>
+
+				<SearchBar 
+					filterText = {this.state.filterText}
+					showTemp = {this.state.showTemp}
+					showHum = {this.state.showHum}
+					showImg = {this.state.showImg}
+					onUserInput= {this.handleUserInput.bind(this)}
+
+				/>
+				<h3>Content  is here below</h3>
+				<CityTable
+					filterText = {this.state.filterText}
+					showTemp = {this.state.showTemp}
+					showHum = {this.state.showHum}
+					showImg = {this.state.showImg}
+					cities = {this.props.cities}
+				/>
+			</div>
+		)
+	}
+}
+
+
+
 
 
 var MyComponent = React.createClass({
@@ -174,32 +230,5 @@ var MyComponent = React.createClass({
 });
 
 
-
-class MyNavbar extends React.Component{
-	render(){
-		return (
-			<div className= 'MyNavbar'>
-			<Navbar>
-				   	<Navbar.Header>
-				      <Navbar.Brand>
-				        <a href="#">Oorja Udyog</a>
-				      </Navbar.Brand>
-				    </Navbar.Header>
-			    <Nav>
-			      <NavItem eventKey={1} href="#">Link</NavItem>
-			      <NavItem eventKey={2} href="#">Link</NavItem>
-			      <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
-			        <MenuItem eventKey={3.1}>Action</MenuItem>
-			        <MenuItem eventKey={3.2}>Another action</MenuItem>
-			        <MenuItem eventKey={3.3}>Something else here</MenuItem>
-			        <MenuItem divider />
-			        <MenuItem eventKey={3.3}>Separated link</MenuItem>
-			      </NavDropdown>
-			    </Nav>
-		  	</Navbar>
-		  	</div>
-	)}
-}
-
  
-ReactDOM.render(<FilterableWeatherImageTable/>, document.getElementById('world'));
+ReactDOM.render(<FilterableWeatherImageTable cities={CITIES}/>, document.getElementById('world'));
