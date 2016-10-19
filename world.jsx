@@ -111,11 +111,13 @@ class CityTable extends React.Component{
 
 	render(){
 		var rows = [];
-		console.log(this.props.filterText)
+		// console.log(this.props.filterText);
+		let ft = this.props.filterText
 		this.props.cities.forEach(function(city){
-			// if (city.city_name.indexOf(this.props.filterText) == -1){
-			// 	return;
-			// }
+			if (city.city_name.indexOf(ft) == -1){
+				return;
+			}
+			
 
 			rows.push(<CityContainer key={city.city_name} city={city} />)
 		});
