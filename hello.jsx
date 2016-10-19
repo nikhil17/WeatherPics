@@ -128,4 +128,4 @@ class PissContent extends React.Component {
    }
 }
 
-ReactDOM.render(<Poo/>, document.getElementById('hello'));
+// ReactDOM.render(<Poo/>, document.getElementById('hello'));

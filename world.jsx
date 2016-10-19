@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Button, Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+// import { Button, Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import $ from 'jquery';
  
 
 
@@ -232,5 +233,76 @@ var MyComponent = React.createClass({
 });
 
 
+class LoadFromServer extends React.Component{
+	constructor(props) {
+	  super(props);
+	
+	  this.state = {
+	  	data:'poo'
+	  };
+	}
+
+	loadServerContent(allURLs){
+		var URLs = ["Australia/Sydney.json", "CA/San_Francisco.json","CA/Cupertino.json", 
+		"India/Pune.json", "India/Mumbai.json", "GA/Atlanta.json"];
+		
+
+		var myURL = this.props.baseURL + "Australia/Sydney.json"
+		$.ajax({
+	      url: myURL,
+	      dataType: 'json',
+	      cache: false,
+	      success: function(data) {
+	        this.setState({[data.location.city]: data});
+			
+	        console.log(data.location.city);
+	      }.bind(this),
+	      error: function(xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+
+	    if (allURLs){
+	    	for (var i = 0; i < URLs.length; i++){
+	    		myURL = this.props.baseURL + URLs[i];
+				$.ajax({
+			      url: myURL,
+			      dataType: 'json',
+			      cache: false,
+			      success: function(data) {
+					
+			        this.setState({[data.location.city]: data});
+			        
+			        console.log(data.location.city);
+			        
+			      }.bind(this),
+			      error: function(xhr, status, err) {
+			        console.error(this.props.url, status, err.toString());
+			      }.bind(this)
+			    });
+	    	}
+	    }
+		
+	}
+
+	componentWillMount(){
+		this.loadServerContent(true);
+	}
+
+	render(){
+		let data = this.state.data;
+		return null;
+		// (
+		// <div>
+		// 	{data}
+		// </div>)
+		
+	}
+}
+
  
 ReactDOM.render(<FilterableWeatherImageTable cities={CITIES}/>, document.getElementById('world'));
+ReactDOM.render(<LoadFromServer baseURL="
+http://api.wunderground.com/api/a2ee2bc849417a1d/geolookup/conditions/forecast/q/
+"/>, document.getElementById('hello'));
+
