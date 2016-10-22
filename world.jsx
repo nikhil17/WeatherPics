@@ -25,7 +25,7 @@ class SearchBar extends React.Component{
 		return (
 			<form>
 				 <input type="text" 
-				 placeholder="Search..." 
+				 placeholder="Enter a city name..." 
 				 value= {this.props.filterText}
 				 ref= "searchText"
 				 onChange= {this.handleChange.bind(this)}/>
@@ -68,19 +68,40 @@ SearchBar.propTypes = {
 }
 
 class CityContainer extends React.Component{
+	constructor(props) {
+	  super(props);
+	  
+	  this.state = {};
+	}
 
 	render(){
+		var cityInfo = [];
 		console.log();
+		cityInfo.push(<b> {this.props.city.location.city}, {this.props.city.location.country}</b>)
+
+		if (this.props.showTemp){
+			cityInfo.push(<p> Feels like: {this.props.city.current_observation.feelslike_c} Celsius</p>)
+		}
+		cityInfo.push(<p> wind : {this.props.city.current_observation.wind_gust_kph} km/hr  </p>)
+
+		if (this.props.showHum){
+			cityInfo.push(<p>Relative Humidity : {this.props.city.current_observation.relative_humidity} </p>)
+		}
+
+		console.log()
+
+				// <p>
+		  //       	{this.props.city.location.city}, {this.props.city.location.country} 
+		  //       	  Feels like : {this.props.city.current_observation.feelslike_c} Celsius  
+		  //       	wind : {this.props.city.current_observation.wind_gust_kph} km/hr  
+		  //       	Relative Humidity : {this.props.city.current_observation.relative_humidity}
+	   //      	</p>
+		
+
 		return(
 			<div>
-			
-	        	<p>
-		        	{this.props.city.location.city}, {this.props.city.location.country} 
-		        	  Feels like : {this.props.city.current_observation.feelslike_c} Celsius  
-		        	wind : {this.props.city.current_observation.wind_gust_kph} km/hr  
-		        	Relative Humidity : {this.props.city.current_observation.relative_humidity}
-	        	</p>
-        	
+				
+	        	{cityInfo}
 
         	</div>
 		);
@@ -115,20 +136,23 @@ class CityTable extends React.Component{
 		var rows = [];
 		// console.log(this.props.filterText);
 		let ft = this.props.filterText
+		let hum = this.props.showHum
+		let img = this.props.showImg
+		let temp = this.props.showTemp
 		this.props.cityWeather.forEach(function(city){
 			if (city.location.city.indexOf(ft) == -1){
 				return;
 			}
 			
 
-			rows.push(<CityContainer key={city.location.city} city={city} />)
+			rows.push(<CityContainer key={city.location.city} city={city} 
+			showHum={hum} showImg = {img} showTemp = {temp} />)
 		});
 
 
 
 		return (
 			<div>
-				<h4>cities here below</h4>
 				{rows}
 
 			</div>
@@ -224,7 +248,7 @@ class FilterableWeatherImageTable extends React.Component{
 	}
 
 	componentWillMount(){
-		this.loadServerContent(false);
+		this.loadServerContent(true);
 	}
 
 
@@ -250,7 +274,6 @@ class FilterableWeatherImageTable extends React.Component{
 					onUserInput= {this.handleUserInput.bind(this)}
 
 				/>
-				<h3>Content  is here below</h3>
 				<CityTable
 					cityWeather = {this.state.cityWeather}
 					filterText = {this.state.filterText}
