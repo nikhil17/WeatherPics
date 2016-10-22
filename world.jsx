@@ -75,9 +75,10 @@ class CityContainer extends React.Component{
 			<div>
 			
 	        	<p>
-		        	{this.props.city.city_name}  {this.props.city.temperature} Celsius  
-		        	wind :{this.props.city.wind}  
-		        	  feels like : {this.props.city.feels_like}
+		        	{this.props.city.location.city}, {this.props.city.location.country} 
+		        	  Feels like : {this.props.city.current_observation.feelslike_c} Celsius  
+		        	wind : {this.props.city.current_observation.wind_gust_kph} km/hr  
+		        	Relative Humidity : {this.props.city.current_observation.relative_humidity}
 	        	</p>
         	
 
@@ -114,13 +115,13 @@ class CityTable extends React.Component{
 		var rows = [];
 		// console.log(this.props.filterText);
 		let ft = this.props.filterText
-		this.props.cities.forEach(function(city){
-			if (city.city_name.indexOf(ft) == -1){
+		this.props.cityWeather.forEach(function(city){
+			if (city.location.city.indexOf(ft) == -1){
 				return;
 			}
 			
 
-			rows.push(<CityContainer key={city.city_name} city={city} />)
+			rows.push(<CityContainer key={city.location.city} city={city} />)
 		});
 
 
@@ -135,10 +136,12 @@ class CityTable extends React.Component{
 	}
 }
 CityTable.propTypes={
-	filterText: React.PropTypes.string
+	filterText: React.PropTypes.string,
+	cityWeather: React.PropTypes.array
 }
 CityTable.defaultProps ={
-	filterText: ""
+	filterText: "",
+	cityWeather: []
 }
 
 
@@ -166,9 +169,65 @@ class FilterableWeatherImageTable extends React.Component{
 		filterText: "",
 		showTemp: true,
 		showHum: true,
-		showImg: true
+		showImg: true,
+		cityWeather:[]
 	  };
 	}
+	loadServerContent(allURLs){
+		var URLs = ["Australia/Sydney.json", "CA/San_Francisco.json","CA/Cupertino.json", 
+		"India/Pune.json", "India/Mumbai.json", "GA/Atlanta.json"];
+		
+
+		
+		
+		
+	    if (allURLs){
+	    	//load all URLs
+	    	for (var i = 0; i < URLs.length; i++){
+	    		myURL = this.props.baseURL + URLs[i];
+				$.ajax({
+			      url: myURL,
+			      dataType: 'json',
+			      cache: false,
+			      success: function(data) {
+					
+			        this.setState({cityWeather: this.state.cityWeather.concat([data])});
+			        
+			        console.log(data.location.city);
+			        
+			      }.bind(this),
+			      error: function(xhr, status, err) {
+			        console.error(this.props.url, status, err.toString());
+			      }.bind(this)
+			    });
+	    	}
+	    }
+	    else{
+	    	//Load only Sydney, AUS
+		    var myURL = this.props.baseURL + "Australia/Sydney.json"
+			$.ajax({
+		      url: myURL,
+		      dataType: 'json',
+		      cache: false,
+		      success: function(data) {
+
+		        this.setState({cityWeather: this.state.cityWeather.concat([data])});
+				
+		        console.log(data.location.city);
+		      }.bind(this),
+		      error: function(xhr, status, err) {
+		        console.error(this.props.url, status, err.toString());
+		      }.bind(this)
+		    });
+	    }
+		
+	}
+
+	componentWillMount(){
+		this.loadServerContent(true);
+	}
+
+
 
 	handleUserInput(filterText, showTemp, showHum, showImg) {
     	this.setState({
@@ -193,6 +252,7 @@ class FilterableWeatherImageTable extends React.Component{
 				/>
 				<h3>Content  is here below</h3>
 				<CityTable
+					cityWeather = {this.state.cityWeather}
 					filterText = {this.state.filterText}
 					showTemp = {this.state.showTemp}
 					showHum = {this.state.showHum}
@@ -286,11 +346,10 @@ class LoadFromServer extends React.Component{
 	}
 
 	componentWillMount(){
-		this.loadServerContent(true);
+		this.loadServerContent(false);
 	}
 
 	render(){
-		let data = this.state.data;
 		return null;
 		// (
 		// <div>
@@ -301,8 +360,9 @@ class LoadFromServer extends React.Component{
 }
 
  
-ReactDOM.render(<FilterableWeatherImageTable cities={CITIES}/>, document.getElementById('world'));
-ReactDOM.render(<LoadFromServer baseURL="
-http://api.wunderground.com/api/a2ee2bc849417a1d/geolookup/conditions/forecast/q/
-"/>, document.getElementById('hello'));
+ReactDOM.render(<FilterableWeatherImageTable cities={CITIES}
+	baseURL="http://api.wunderground.com/api/a2ee2bc849417a1d/geolookup/conditions/forecast/q/"/>, document.getElementById('world'));
+// ReactDOM.render(<LoadFromServer baseURL="
+// http://api.wunderground.com/api/a2ee2bc849417a1d/geolookup/conditions/forecast/q/
+// "/>, document.getElementById('hello'));
 
