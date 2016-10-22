@@ -224,7 +224,7 @@ class FilterableWeatherImageTable extends React.Component{
 	}
 
 	componentWillMount(){
-		this.loadServerContent(true);
+		this.loadServerContent(false);
 	}
 
 
