@@ -108,6 +108,47 @@ class CityContainer extends React.Component{
 	}
 }
 
+class ServerCityContainer extends React.Component{
+	constructor(props) {
+	  super(props);
+	  
+	  this.state = {};
+	}
+
+	render(){
+		
+		var cityInfo = [];
+		// console.log();
+		cityInfo.push(<b> {this.props.city.location}</b>)
+
+
+		if (this.props.showTemp){
+			cityInfo.push(<p> The weather today is : {this.props.city.weather_conditions.weather}</p>)
+			cityInfo.push(<p> Feels like: {this.props.city.weather_conditions.feelslike_c} Celsius</p>)
+			cityInfo.push(<p>{this.props.city.weather_conditions.observation_time}</p>)
+			cityInfo.push(<p>Wind conditions :{this.props.city.weather_conditions.wind_string}</p>)
+
+
+		}
+		// cityInfo.push(<p> wind : {this.props.city.current_observation.wind_gust_kph} km/hr  </p>)
+
+		if (this.props.showHum){
+			cityInfo.push(<p>Relative Humidity : {this.props.city.weather_conditions.relative_humidity} </p>)
+		}
+
+		console.log()
+
+		
+		return(
+			<div>
+				
+	        	{cityInfo}
+
+        	</div>
+		);
+	}
+}
+
 class CityTable extends React.Component{
 
 	constructor(props) {
@@ -116,6 +157,11 @@ class CityTable extends React.Component{
 		this.search = this.search.bind(this);
 		// console.log(props);
 		
+	}
+
+	componentWillUpdate(prevProps, prevState){
+
+		console.log(this.props)
 	}
 
 	search(){
@@ -139,15 +185,46 @@ class CityTable extends React.Component{
 		let hum = this.props.showHum
 		let img = this.props.showImg
 		let temp = this.props.showTemp
+
 		this.props.cityWeather.forEach(function(city){
 			if (city.location.city.indexOf(ft) == -1){
 				return;
 			}
 			
 
-			rows.push(<CityContainer key={city.location.city} city={city} 
+			rows.push(<CityContainer key={city.location.city} city={city} info={this}
 			showHum={hum} showImg = {img} showTemp = {temp} />)
 		});
+		
+
+		if (this.props.allThings == null){
+			console.log('piss')
+		}
+		else{
+			console.log('got stuff from my server. Rerendering')
+			this.props.allThings.observations.forEach(function(city){
+				console.log(city)
+				if (city.location.indexOf(ft) == -1){
+					return;
+				}
+
+				rows.push(<ServerCityContainer key={city.location} city={city}
+				showHum={hum} showImg = {img} showTemp = {temp} />)
+			});
+
+			
+		}
+		// this.props.allThings.observations.forEach(function(city){
+		// 	console.log(city)
+		
+			// if (city.location.indexOf(ft) == -1){
+			// 	return;
+			// }
+			
+
+		// 	rows.push(<ServerCityContainer 
+		// 	showHum={hum} showImg = {img} showTemp = {temp} />)
+		// });
 
 
 
@@ -247,8 +324,30 @@ class FilterableWeatherImageTable extends React.Component{
 		
 	}
 
+	loadMyServerContent(){
+		var myURL = "https://shielded-sea-79955.herokuapp.com/getAllTheThings"
+		$.ajax({
+			// headers: { 'Access-Control-Allow-Origin': '*' },
+			// crossDomain: true,
+		    url: myURL,
+		    dataType: 'Json',
+		    cache: false,
+		    type: 'GET',
+		    success: function(data) {
+				console.log('got server content');
+		        this.setState({allThings: data});
+				
+		    }.bind(this),
+		    error: function(xhr, status, err) {
+		        console.error(this.props.url, status, err.toString());
+		    }.bind(this),
+		});
+
+	}
+
 	componentWillMount(){
-		this.loadServerContent(true);
+		// this.loadServerContent(false);
+		this.loadMyServerContent();
 	}
 
 
@@ -274,6 +373,7 @@ class FilterableWeatherImageTable extends React.Component{
 					onUserInput= {this.handleUserInput.bind(this)}
 
 				/>
+				<ButtonLoader></ButtonLoader>
 				<CityTable
 					cityWeather = {this.state.cityWeather}
 					filterText = {this.state.filterText}
@@ -281,6 +381,7 @@ class FilterableWeatherImageTable extends React.Component{
 					showHum = {this.state.showHum}
 					showImg = {this.state.showImg}
 					cities = {this.props.cities}
+					allThings = {this.state.allThings}
 				/>
 			</div>
 		)
@@ -291,23 +392,41 @@ class FilterableWeatherImageTable extends React.Component{
 
 
 
-var MyComponent = React.createClass({
+var ButtonLoader = React.createClass({
   handleClick: function() {
     // Explicitly focus the text input using the raw DOM API.
     if (this.piss !== null) {
-      this.piss.focus();
+      // this.piss.focus();
       console.log(this)
     }
+    var myURL = "https://shielded-sea-79955.herokuapp.com/"
+		$.ajax({
+			// headers: { 'Access-Control-Allow-Origin': '*' },
+			// crossDomain: true,
+		    url: myURL,
+		    dataType: 'Json',
+		    cache: false,
+		    type: 'GET',
+		    success: function(data) {
+				console.log('refreshing server info');
+		        
+		    }.bind(this),
+		    error: function(xhr, status, err) {
+		        console.error(this.props.url, status, err.toString());
+		    }.bind(this),
+		});
+		window.alert("This takes some time. Server can't reload while refreshing data")
   },
   render: function() {
     // The ref attribute is a callback that saves a reference to the
     // component to this.myTextInput when the component is mounted.
+            // <input type="text" ref={(ref) => this.piss = ref} />
+
     return (
       <div>
-        <input type="text" ref={(ref) => this.piss = ref} />
         <input
           type="button"
-          value="Focus the text input"
+          value="Refresh weather data (this takes a while)"
           onClick={this.handleClick}
         />
       </div>
