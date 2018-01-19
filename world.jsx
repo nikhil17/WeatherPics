@@ -8,7 +8,6 @@ import $ from 'jquery';
 class SearchBar extends React.Component{
 
 	handleChange(event){
-		// console.log('piss')
 		this.props.onUserInput(this.refs.searchText.value,
 			this.refs.temp.checked,
 			this.refs.hum.checked,
@@ -440,7 +439,7 @@ class LoadFromServer extends React.Component{
 	  super(props);
 	
 	  this.state = {
-	  	data:'poo'
+	  	data:'test'
 	  };
 	}
 
