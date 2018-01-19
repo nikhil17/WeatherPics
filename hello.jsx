@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 class Hello extends React.Component {
   render() {
-    return <h1>Poopers</h1>
+    return <h1>Test</h1>
   }
 }
 
@@ -53,7 +53,7 @@ var Child = React.createClass({
     }
 });
 
-class Poo extends React.Component {
+class Weather extends React.Component {
 
    constructor(props) {
       super(props);
@@ -79,7 +79,7 @@ class Poo extends React.Component {
    }
 }
 
-class PissContent extends React.Component {
+class TestContent extends React.Component {
     constructor(props) {
       super(props);
         console.log('constructor')
@@ -128,4 +128,4 @@ class PissContent extends React.Component {
    }
 }
 
-// ReactDOM.render(<Poo/>, document.getElementById('hello'));
+// ReactDOM.render(<Weather/>, document.getElementById('hello'));
